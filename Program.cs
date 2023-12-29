@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +7,8 @@ using DiscordRPC;
 using DiscordRPC.Logging;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 
 namespace Discord_SilvesterCounter
@@ -21,7 +23,7 @@ namespace Discord_SilvesterCounter
 
     class Program
     {
-        static string ClientID = "censored";
+        static string ClientID = "";
 
         public static  DiscordRpcClient client;
         static bool initalized = false;
@@ -34,6 +36,8 @@ namespace Discord_SilvesterCounter
 
         static void Main(string[] args)
         {
+            ClientID = File.ReadAllText(Assembly.GetExecutingAssembly().Location.Replace("Discord_SilvesterCounter.exe", "id.txt"));
+
             startHour = DateTime.Now.ToString("HH").ToString();
             win = new Window
             {
@@ -82,44 +86,50 @@ namespace Discord_SilvesterCounter
             Graphics g = e.Graphics;
             g.Clear(Color.White);
 
-            string _time = DateTime.Now.ToString("HH:mm:ss");
-            string[] time = _time.Split(':');
+            //string _time = DateTime.Now.ToString("HH:mm:ss");
+            //string[] time = _time.Split(':');
 
-            int s = (int.Parse(time[0]) * 60) + (int.Parse(time[1]) * 60) + int.Parse(time[2]);
-            int n = s - 86400;
+            //int s = (int.Parse(time[0]) * 60) + (int.Parse(time[1]) * 60) + int.Parse(time[2]);
+            //int n = s - 86400;
 
-            int ss = (int.Parse(time[2]) - 59);
-            string _ss = ss.ToString();
+            //int ss = (int.Parse(time[2]) - 59);
+            //string _ss = ss.ToString();
 
-            int mm = (int.Parse(time[1]) - 59);
-            string _mm = mm.ToString();
+            //int mm = (int.Parse(time[1]) - 59);
+            //string _mm = mm.ToString();
 
-            int hh = (int.Parse(time[0]) - 23);
-            string _hh = hh.ToString();
+            //int hh = (int.Parse(time[0]) - 23);
+            //string _hh = hh.ToString();
 
 
-            if (ss < 0) { _ss = _ss.Remove(0, 1); if (_ss.Length == 1) { _ss = "0" + _ss; } if (_ss.Length == 0) { _ss = "00"; } }
-            if (mm < 0) { _mm = _mm.Remove(0, 1); if (_mm.Length == 1) { _mm = "0" + _mm; } if (_mm.Length == 0) { _mm = "00"; } }
-            if (hh < 0) { _hh = _hh.Remove(0, 1); if (_hh.Length == 1) { _hh = "0" + _hh; } if (_hh.Length == 0) { _hh = "00"; } }
+            //if (ss < 0) { _ss = _ss.Remove(0, 1); if (_ss.Length == 1) { _ss = "0" + _ss; } if (_ss.Length == 0) { _ss = "00"; } }
+            //if (mm < 0) { _mm = _mm.Remove(0, 1); if (_mm.Length == 1) { _mm = "0" + _mm; } if (_mm.Length == 0) { _mm = "00"; } }
+            //if (hh < 0) { _hh = _hh.Remove(0, 1); if (_hh.Length == 1) { _hh = "0" + _hh; } if (_hh.Length == 0) { _hh = "00"; } }
 
             //if (int.Parse(startHour) > int.Parse(_hh))
             //    countTime = $"-{_hh}:{_mm}:{_ss}";
             //else
             //    countTime = $"Happy New Year!";
 
+            // From here on new code starts
             DateTime now = DateTime.Now;
-            DateTime silvester = DateTime.Parse("01.01.2024 00:00:01Z");
+            DateTime silvester = DateTime.Parse($"01.01.{now.Year + 1} 00:00:00");
+
+            TimeSpan differenze = silvester - now;
 
             if (now > silvester)
             {
                 countTime = "Happy New Year!";
             }
-            else countTime = $"-{(silvester - now).Days}d:{_hh}H:{_mm}m:{_ss}s";
+            else countTime = $"-{(silvester - now).Days}d:{differenze.Hours}h:{differenze.Minutes}m:{differenze.Seconds}s";
+            
+            g.DrawString(silvester.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 100);
+            // new code ends here :D
 
 
-            g.DrawString(s.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 100);
+            //g.DrawString(s.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 100);
             g.DrawString(DateTime.Now.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 50);
-            g.DrawString(n.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 300, 100);
+            //g.DrawString(n.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 300, 100);
             g.DrawString(countTime.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 500, 100);
         }
 
@@ -147,7 +157,7 @@ namespace Discord_SilvesterCounter
                     Assets = new Assets()
                     {
                         LargeImageKey = "fireworks",
-                        LargeImageText = "01000111's RPC App",
+                        LargeImageText = "@greendata's RPC App",
                         SmallImageKey = ""
                     }
                 });
