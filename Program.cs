@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DiscordRPC;
 using DiscordRPC.Logging;
 using System.Windows.Forms;
@@ -31,14 +27,12 @@ namespace Discord_SilvesterCounter
         public static Thread Loop = null;
         public static Window win = null;
 
-        public static string startHour;
         public static string countTime;
 
         static void Main(string[] args)
         {
             ClientID = File.ReadAllText(Assembly.GetExecutingAssembly().Location.Replace("Discord_SilvesterCounter.exe", "id.txt"));
 
-            startHour = DateTime.Now.ToString("HH").ToString();
             win = new Window
             {
                 Size = new Size(800, 300),
@@ -86,6 +80,25 @@ namespace Discord_SilvesterCounter
             Graphics g = e.Graphics;
             g.Clear(Color.White);
 
+            // -- From here on new code starts --
+            DateTime now = DateTime.Now;
+            DateTime silvester = DateTime.Parse($"01.01.{now.Year + 1} 00:00:00");
+
+            TimeSpan differenze = silvester - now;
+
+            if (now > silvester)
+            {
+                countTime = "Happy New Year!";
+            }
+            else countTime = $"-{(silvester - now).Days}d:{differenze.Hours}h:{differenze.Minutes}m:{differenze.Seconds}s";
+
+            g.DrawString(DateTime.Now.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 50);
+            g.DrawString(silvester.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 100);
+            g.DrawString(countTime.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 500, 100);
+            // -- new code ends here :D --
+
+            #region old_code
+
             //string _time = DateTime.Now.ToString("HH:mm:ss");
             //string[] time = _time.Split(':');
 
@@ -111,34 +124,20 @@ namespace Discord_SilvesterCounter
             //else
             //    countTime = $"Happy New Year!";
 
-            // From here on new code starts
-            DateTime now = DateTime.Now;
-            DateTime silvester = DateTime.Parse($"01.01.{now.Year + 1} 00:00:00");
-
-            TimeSpan differenze = silvester - now;
-
-            if (now > silvester)
-            {
-                countTime = "Happy New Year!";
-            }
-            else countTime = $"-{(silvester - now).Days}d:{differenze.Hours}h:{differenze.Minutes}m:{differenze.Seconds}s";
-            
-            g.DrawString(silvester.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 100);
-            // new code ends here :D
-
-
             //g.DrawString(s.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 100);
-            g.DrawString(DateTime.Now.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 50);
+            //g.DrawString(DateTime.Now.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 100, 50);
             //g.DrawString(n.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 300, 100);
-            g.DrawString(countTime.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 500, 100);
+            //g.DrawString(countTime.ToString(), new Font(FontFamily.GenericMonospace, 20f), new SolidBrush(Color.Black), 500, 100);
+
+            #endregion
         }
 
         public static void initialize()
         {
-            initalized = true;
             client = new DiscordRpcClient(ClientID);
             client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
             client.Initialize();
+            initalized = true;
         }
 
         public static void Update()
